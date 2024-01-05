@@ -1,29 +1,13 @@
-package com.springboot.web.apiUser;
+package com.springboot.web.test;
 
+import lombok.Data;
 
-public class User {
-
+@Data
+public class UserVariable {
     private int id;
     private String name;
     private String city;
     private String status;
-
-    public User(int id, String name, String city, String status) {
-        super();
-        this.id = id;
-        this.name = name;
-        this.city = city;
-        this.status = status;
-    }
-    public User() {
-        super();
-    }
-
-    public User(String name, String city, String status) {
-        this.name = name;
-        this.city = city;
-        this.status = status;
-    }
 
     public int getId() {
         return id;
