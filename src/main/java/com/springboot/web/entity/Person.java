@@ -20,6 +20,13 @@ public class Person {
     private String name;
     private String dept;
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
