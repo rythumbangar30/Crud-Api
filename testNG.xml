@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="PracticeSuite">
+
+    <test name="TestCase" >
+        <classes>
+            <class name="com.springboot.web.test.PersonTest"/>
+           <!-- <class name="com.springboot.web.test.PersonUnitTest"/>-->
+<!--            <class name="DynamicModel.Cases.UserPointsComments"/>-->
+<!--            <class name="DynamicModel.Cases.UserPointsTodos"/>-->
+        </classes>
+    </test>
+</suite>
+
