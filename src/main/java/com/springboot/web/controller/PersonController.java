@@ -1,7 +1,7 @@
 package com.springboot.web.controller;
 
 import com.springboot.web.Service.PersonService;
-import com.springboot.web.dao.PersonRepository;
+//import com.springboot.web.dao.PersonRepository;
 import com.springboot.web.entity.Person;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

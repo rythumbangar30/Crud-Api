@@ -19,7 +19,7 @@ public class Person {
     private int id;
     private String name;
     private String dept;
-
+    private double salary;
     public int getId() {
         return id;
     }
@@ -52,7 +52,7 @@ public class Person {
         this.salary = salary;
     }
 
-    private double salary;
+
 
 }
 //    public int getId() {

@@ -10,13 +10,16 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static io.restassured.RestAssured.when;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
+//import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,7 +30,6 @@ public class PersonUnitTest {
     @InjectMocks
     PersonService personService;
 
-
     @Test
     void testAddPerson() {
         // Given
@@ -37,7 +39,6 @@ public class PersonUnitTest {
         personToAdd.setDept("IT");
         personToAdd.setSalary(20000);
         Mockito.when(personRepository.save(personToAdd)).thenReturn(personToAdd);
-
 
         // When
         Person personFromDb = personService.addPerson(personToAdd);
@@ -80,6 +81,7 @@ public class PersonUnitTest {
 //        verify(personRepository,times(1)).save(personToAdd);
 
     }
+
     @Test
     void getPersonById(){
         Person person = new Person();
@@ -98,6 +100,18 @@ public class PersonUnitTest {
         verify(personRepository,times(1)).findById(1);
 
     }
+
+    @Test
+    void getPerson_WithNonExistenceUser(){
+        int userId=45;
+
+        Mockito.when(personRepository.findById(userId)).thenReturn(Optional.empty());
+
+        Person result=personService.getPersonById(userId);
+        assertNull(result);
+        verify(personRepository,times(1)).findById(userId);
+    }
+
     @Test
     void updatePerson(){
         Person person = new Person();
@@ -112,7 +126,7 @@ public class PersonUnitTest {
         updatePerson.setName("Bhim");
         updatePerson.setDept("PM");
         updatePerson.setSalary(10000);
-//        personRepository.save(person);
+//            personRepository.save(person);
 
         Optional<Person> optionalEntityType = Optional.of(person);
         lenient().when(personRepository.findById(updatePerson.getId())).thenReturn(optionalEntityType);
@@ -122,6 +136,26 @@ public class PersonUnitTest {
         assertEquals("PM",result.getDept());
         verify(personRepository,times(1)).save(any(Person.class));
 
+    }
+
+    @Test
+    void updatePerson_WithNonExistencePerson(){
+
+//        MockitoAnnotations.initMocks(this);   This will only work in mockito 2
+        int userId=20;
+        Person person=new Person();
+        person.setId(11);
+        person.setDept("PM");
+        person.setSalary(20343);
+        person.setName("Amy");
+
+        Mockito.when(personRepository.findById(userId)).thenReturn(Optional.empty());
+
+        Person result=personService.updatePerson(userId,person);
+
+        assertNull(result);
+
+        verify(personRepository,times(1)).findById(userId);
     }
 
     @Test
@@ -138,10 +172,24 @@ public class PersonUnitTest {
         Mockito.when(personRepository.findById(person.getId())).thenReturn(optionalEntityType);
 
         String message=personService.deletedPerson(person.getId());
+        verify(personRepository,times(1)).deleteById(person.getId());
 
         assertEquals("Person got Deleted",message);
-        verify(personRepository,times(1)).deleteById(person.getId());
+//        verify(personRepository,times(2)).deleteById(person.getId());
 //        assertThat(personRepository.findById(person.getId()).get()).isNull();
+    }
+
+    @Test
+    void deletePerson_WithNonExistencePerson(){
+        int userId=20;
+
+        Mockito.when(personRepository.findById(userId)).thenReturn(Optional.empty());
+
+        String result=personService.deletedPerson(userId);
+
+        assertEquals("Person not Deleted",result);
+
+        verify(personRepository,times(1)).findById(userId);
     }
 //    private static Person user(){
 //       Person person=new Person();
