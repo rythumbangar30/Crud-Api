@@ -2,14 +2,14 @@ package com.springboot.web.test;
 import com.github.javafaker.Faker;
 import com.google.gson.Gson;
 import com.springboot.web.BaseTest;
-import com.springboot.web.Service.PersonService;
-import com.springboot.web.apiUser.UserService;
 import com.springboot.web.entity.Person;
 import io.restassured.http.ContentType;
 import io.restassured.http.Method;
 import io.restassured.response.Response;
 import org.json.JSONException;
 import org.json.JSONObject;
+//import org.junit.jupiter.api.Test;
+import org.springframework.context.annotation.Configuration;
 import org.testng.annotations.Test;
 
 import java.util.HashMap;
@@ -19,7 +19,7 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasProperty;
-
+//@Configuration
 public class PersonTest extends BaseTest {
     Faker faker=new Faker();
     Person person=new Person();
@@ -46,11 +46,12 @@ public class PersonTest extends BaseTest {
         JSONObject json=new JSONObject(response.asString());
 
         assertThat(response.statusCode(),equalTo(200));
-        assertThat(person,hasProperty("name"));
+        assertThat(person.getName(),equalTo(json.get("name")));
+        assertThat(person.getDept(),equalTo(json.get("dept")));
+        assertThat(person.getSalary(),equalTo(json.get("salary")));
 
-        System.out.println("Get User By Id:\n"+response.asString());
+        System.out.println("Get Person By Id:\n"+response.asString());
 
-        response.then().log().all();
     }
 
     @Test
@@ -62,8 +63,11 @@ public class PersonTest extends BaseTest {
 
         int userId=jsonObject.getInt("id");
 
-        System.out.println("ADDED USER:\n"+userId);
-        assertThat(person,hasProperty("dept"));
+        assertThat(person.getName(),equalTo(jsonObject.get("name")));
+        assertThat(person.getDept(),equalTo(jsonObject.get("dept")));
+        assertThat(person.getSalary(),equalTo(jsonObject.get("salary")));
+
+        System.out.println("ADDED PERSON:\n"+userId);
     }
 
     @Test
@@ -85,16 +89,22 @@ public class PersonTest extends BaseTest {
         Response response=updatePerson(userId,payload);
 
 //        response.then().log().all();
-        System.out.println("Updated User:\n"+response.asString());
+        System.out.println("Updated PERSON:\n"+response.asString());
 
         String responseBody1=response.asString();
-        JSONObject jsonObject1=new JSONObject(responseBody1);
 
-        PersonVariable person=new Gson().fromJson(String.valueOf(jsonObject1), PersonVariable.class);
+        Gson gson = new Gson();
+        Person object = gson.fromJson(responseBody1, Person.class);
 
-        assertThat(person,hasProperty("name"));
+        assertThat(object,hasProperty("name",equalTo(object.getName())));
+        assertThat(object,hasProperty("dept",equalTo(object.getDept())));
+        assertThat(object,hasProperty("salary",equalTo(object.getSalary())));
 
-
+//        JsonObject to Person Object
+//        JSONObject jsonObject1=new JSONObject(responseBody1);
+//        PersonVariable person=new Gson().fromJson(String.valueOf(jsonObject1), PersonVariable.class);
+//        assertThat(person,hasProperty("name",equalTo(person)));
+//        assertThat(person,equalTo(jsonObject1.get("dept")));
 
     }
 
@@ -109,6 +119,7 @@ public class PersonTest extends BaseTest {
         assertThat(response.statusCode(),equalTo(204));
         System.out.println("Deleted Person:"+userId);
     }
+
     private Response createPerson(){
         person.setName(faker.name().name());
         person.setDept(faker.commerce().department());
@@ -134,7 +145,7 @@ public class PersonTest extends BaseTest {
         Response response=given()
                 .contentType(ContentType.JSON)
                 .body(payload)
-                .request(Method.POST,localUri+"addPerson");
+                .request(Method.POST,"addPerson");
         return response;
     }
 
@@ -152,12 +163,12 @@ public class PersonTest extends BaseTest {
         Response response=given()
                 .contentType(ContentType.JSON)
                 .body(payload)
-                .request(Method.PUT,localUri+"updatePerson/"+id);
+                .request(Method.PUT,"updatePerson/"+id);
         return response;
     }
     Response deletePerson(int id){
         Response response=given()
-                .request(Method.DELETE,localUri+"deletePerson/"+id);
+                .request(Method.DELETE,"deletePerson/"+id);
         return response;
     }
 }
